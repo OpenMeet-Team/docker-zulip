@@ -35,6 +35,7 @@ dependencies:
       - postgresql
     # Note: values.yaml overwrites posgresql image to zulip/zulip-postgresql:14
     version: 15.5.32
+    condition: postgresql.enabled
 
 sources:
   - https://github.com/zulip/zulip

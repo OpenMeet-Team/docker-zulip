@@ -63,15 +63,17 @@ Create the name of the service account to use
 
 {{/*
 include all env variables for Zulip pods
-*/}}
-{{- define "zulip.env" -}}
-
+*/}}{{- define "zulip.env" -}}
+{{- if .Values.postgresql.enabled }}
 - name: DB_HOST
-  value: "{{ template "postgresql.v1.primary.fullname" .Subcharts.postgresql }}"
+  value: "{{ .Values.postgresql.fullname }}"
 - name: DB_HOST_PORT
-  value: "{{ template "postgresql.v1.service.port" .Subcharts.postgresql }}"
+  value: "{{ .Values.postgresql.service.port }}"
 - name: DB_USER
-  value: "postgres"
+  value: "{{ .Values.postgresql.auth.username }}"
+- name: SECRETS_postgres_password
+  value: "{{ .Values.postgresql.auth.password }}"
+{{- end }}
 - name: SETTING_MEMCACHED_LOCATION
   value: "{{ template "common.names.fullname" .Subcharts.memcached }}:11211"
 - name: SETTING_RABBITMQ_HOST
@@ -80,8 +82,6 @@ include all env variables for Zulip pods
   value: "{{ template "common.names.fullname" .Subcharts.redis }}-headless"
 - name: SECRETS_rabbitmq_password
   value: "{{ .Values.rabbitmq.auth.password }}"
-- name: SECRETS_postgres_password
-  value: "{{ .Values.postgresql.auth.password }}"
 - name: SECRETS_memcached_password
   value: "{{ .Values.memcached.memcachedPassword }}"
 - name: SECRETS_redis_password
